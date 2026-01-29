@@ -1,1 +1,2325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport optimizado para que no haga zoom automático y cubra todo el notch -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Metaetiquetas para iOS (iPhone/iPad) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Oddoner">
 
+    <title>Oddoner</title>
+
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Iconos para PWA y Móviles (Asegúrate de tener estos archivos en la carpeta raíz) -->
+    <link rel="apple-touch-icon" sizes="152x152" href="image/icon-152.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="image/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="image/icon-512.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="image/icon-512.png">
+
+    <meta name="theme-color" content="#131314">
+
+    <style>
+        /* Aquí va el inicio de tus estilos CSS */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        :root {
+        /* PALETA GEMINI DARK MODE */
+        --bg-app: #131314;           /* Fondo principal */
+        --surface-card: #1e1f20;     /* Color de tarjetas */
+        --surface-hover: #333537;    /* Hover en tarjetas */
+        --text-primary: #e3e3e3;     /* Texto principal */
+        --text-secondary: #c4c7c5;   /* Texto secundario */
+        --gemini-gradient: linear-gradient(90deg, #4b90ff, #ff5546); /* Gradiente Gemini */
+          
+        /* Mapeo a variables existentes para compatibilidad */
+        --color-primary: #a8c7fa;    /* Azul claro Google */
+        --color-secondary: #4b90ff;  /* Azul Google */
+        --color-alert: #ffb4ab;      /* Rojo suave alerta */
+        
+        --neon-blue: #4b90ff;        /* Reemplazado por Azul Gemini */
+        --neon-purple: #d96570;      /* Reemplazado por Rosa/Rojo Gemini */
+          
+        --color-surface: #1e1f20;    /* Fondo de modales */
+        --color-text-dark: #e3e3e3;  /* Texto claro sobre fondo oscuro */
+        --shadow-strong: 0 4px 8px rgba(0,0,0,0.4);
+    }
+
+    /* DETALLES DE APP NATIVA */
+    * {
+        -webkit-tap-highlight-color: transparent; /* Elimina el flash azul al tocar en móviles */
+    }
+    /* ESTILOS BASE */
+    body {
+        /* FONDO GEMINI */
+        overscroll-behavior-y: none; /* Evita el rebote elástico en móviles */
+        background: var(--bg-app);
+        background-size: cover;
+        background-position: center;
+        color: var(--text-primary);
+        min-height: 100vh;
+        min-height: 100dvh; /* Altura dinámica para móviles modernos */
+        /* Padding seguro para móviles (Notch/Isla dinámica) */
+        padding-top: max(15px, env(safe-area-inset-top));
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+        margin: 0;
+        font-family: 'Roboto', sans-serif;
+        overflow-x: hidden;
+        /* Suavizado de fuentes para elegancia */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* Evitar selección de texto en la UI (sensación de App) */
+        user-select: none;
+        position: relative; /* Para posicionamiento absoluto interno */
+    }
+
+    /* --- MODO MÓVIL EN PC --- */
+    @media (min-width: 481px) {
+        html {
+            background-color: #000; /* Fondo negro fuera de la app */
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        body {
+            width: 100%;
+            max-width: 480px; /* Ancho máximo de móvil */
+            border-left: 1px solid #333;
+            border-right: 1px solid #333;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            margin: 0; /* El centrado lo hace el html flex */
+        }
+        /* Ajustar posición de elementos fijos para que no se salgan del "móvil" */
+        #stars-container { position: absolute; }
+        .modal-overlay, #nebula-overlay, #pupila-dimensional-overlay, #loom-overlay, #neuro-gate-overlay { position: absolute; }
+    }
+    /* Permitir selección solo donde se escribe */
+    input, textarea { user-select: text; }
+
+    /* SCROLLBAR PERSONALIZADO (Tema Oscuro) */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+    /* ===== ESTILO ELEGANTE PARA EL TÍTULO ODDONER (NUEVO) ===== */
+    header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    header h1 {
+        font-size: 2.6em;
+        letter-spacing: 4px;
+        font-weight: 700;
+        text-transform: uppercase;
+        background: var(--gemini-gradient);
+        background-clip: text; 
+        -webkit-text-fill-color: transparent;
+        text-shadow: none;
+        margin-bottom: 6px;
+    }
+ 
+    header p {
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9em;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #ffffff, #c4c7c5);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 400;
+        text-shadow: none;
+    }
+    /* Fin de estilos de título */
+
+    /* ESTILOS DE BOTÓN GENÉRICO PARA MODALES */
+    .btn {
+        background: var(--neon-blue);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s, box-shadow 0.3s;
+        /* Asegurarse de que el botón de SMS sea un bloque */
+        display: inline-block;
+        text-decoration: none; /* Quitar subrayado del enlace */
+        text-align: center;
+        box-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+        touch-action: manipulation; /* Optimización táctil */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    @media (hover: hover) {
+        .btn:hover {
+            background: var(--neon-purple);
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+    }
+    .btn svg { width: 20px; height: 20px; fill: currentColor; }
+    .btn:disabled {
+        background: #444;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+    .btn:active {
+        transform: scale(0.96); /* Feedback táctil al presionar */
+    }
+      
+    /* ####### ESTILOS DE INICIO ####### */
+      
+    /* ESTRELLAS DE FONDO */
+    #stars-container {
+        position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+    .star {
+        position: absolute; background: white; border-radius: 50%;
+        animation: twinkle var(--duration) ease-in-out infinite;
+        opacity: var(--opacity);
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+    }
+    @keyframes twinkle {
+        0%, 100% { opacity: var(--opacity); transform: scale(1); } 
+        50% { opacity: 0.1; transform: scale(0.5); }
+    }
+
+    /* BOTÓN DE CRISIS (Mantener) */
+    #btn-crisis {
+        position: absolute; top: 15px; right: 15px;
+        background: var(--color-alert);
+        color: white;
+        padding: 8px;
+        border-radius: 50%;
+        width: 40px; height: 40px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 1.5em;
+        cursor: pointer;
+        box-shadow: 0 0 15px var(--color-alert);
+        z-index: 5000;
+        transition: transform 0.2s;
+    }
+    
+    /* BOTÓN DE MÚSICA ESQUINA IZQUIERDA */
+    #music-corner-container {
+        position: absolute; top: 15px; left: 15px;
+        z-index: 5000;
+        display: flex; flex-direction: column; align-items: center;
+        cursor: pointer;
+    }
+    #btn-music-corner {
+        background: var(--surface-card);
+        border: 2px solid var(--color-primary);
+        color: white;
+        border-radius: 50%;
+        width: 40px; height: 40px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 1.5em;
+        box-shadow: 0 0 15px var(--color-primary);
+        transition: transform 0.3s;
+    }
+    /* Iconos SVG en botones circulares */
+    #btn-crisis svg, #btn-settings-corner svg, #btn-music-corner svg { width: 24px; height: 24px; fill: white; }
+
+    #btn-music-corner:hover { transform: scale(1.1); }
+    #music-credits {
+        font-size: 0.5em; 
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        margin-top: 4px;
+        font-weight: bold;
+        text-shadow: 0 0 3px #000;
+        line-height: 1.1;
+    }
+
+    /* BOTÓN DE INSTALAR APP (NUEVO - OPTIMIZADO) */
+    #install-container {
+        position: absolute; bottom: 15px; right: 15px;
+        z-index: 5000;
+        display: none; /* Se activa con JS */
+    }
+    #btn-install {
+        background: var(--gemini-gradient);
+        color: white; border: none; padding: 6px 10px; border-radius: 4px;
+        font-size: 0.65em; font-weight: bold; cursor: pointer; 
+        box-shadow: 0 0 10px rgba(75, 144, 255, 0.4); text-transform: uppercase;
+        text-align: center; line-height: 1.2;
+    }
+
+    /* BOTÓN DE AJUSTES ESQUINA IZQUIERDA INFERIOR */
+    #settings-corner-container {
+        position: absolute; bottom: 15px; left: 15px;
+        z-index: 5000;
+        display: flex; flex-direction: column; align-items: center;
+        cursor: pointer;
+    }
+    #btn-settings-corner {
+        background: var(--surface-card);
+        border: 2px solid var(--text-secondary);
+        color: white;
+        border-radius: 50%;
+        width: 40px; height: 40px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 1.5em;
+        box-shadow: 0 0 15px var(--text-secondary);
+        transition: transform 0.3s;
+    }
+    #btn-settings-corner:hover { transform: scale(1.1); }
+    #settings-credits { /* Reusing music-credits style */
+        font-size: 0.5em; 
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        margin-top: 4px;
+        font-weight: bold;
+        text-shadow: 0 0 3px #000;
+        line-height: 1.1;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+      
+    #content-wrapper { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+
+    /* RELOJ ORBITAL */
+    #clock-wrapper {
+        position: relative; width: 100%; max-width: 320px;
+        aspect-ratio: 1 / 1; margin: 0 auto; transform: scale(0.9);
+    }
+    
+    /* CANVAS RELOJ MAGNÉTICO */
+    #magnetic-clock-canvas {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        z-index: 1; pointer-events: none;
+    }
+
+    /* ===== RELOJ HUD FUTURISTA (ADICIONAL) ===== */
+    #counter-content {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        text-align: center; font-weight: bold;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 18px;
+        padding: 14px 18px;
+        background: rgba(30, 31, 32, 0.85); /* Fondo semitransparente para leer sobre partículas */
+        backdrop-filter: blur(4px);
+        box-shadow: none; /* Sombra invisible */
+        z-index: 10; /* Encima del canvas */
+        cursor: pointer; /* Indicar que es clicleable */
+        transition: background 0.3s;
+    }
+    @media (hover: hover) {
+        #counter-content:hover {
+            background: var(--surface-hover);
+        }
+    }
+    #days-display {
+        font-size: 1.6em;
+        font-weight: 700;
+        letter-spacing: 3px;
+    }
+    #hms-display {
+        font-family: monospace;
+        font-size: 0.9em;
+        opacity: 0.65;
+        letter-spacing: 2px;
+    }
+    #clock-footer {
+        text-align: center; 
+        margin-top: 15px; 
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 12px;
+        transition: background 0.3s;
+    }
+    @media (hover: hover) {
+        #clock-footer:hover {
+            background: var(--surface-hover);
+        }
+    }
+
+    /* BARRA DE PROGRESO (OPTIMIZADA) */
+    #milestone-container {
+        width: 85%; max-width: 300px; margin: 5px auto 15px auto;
+    }
+    .progress-labels {
+        display: flex; justify-content: space-between;
+        font-size: 0.75em; color: rgba(255,255,255,0.7); 
+        margin-bottom: 4px; font-family: 'Orbitron', sans-serif;
+    }
+    .progress-track {
+        width: 100%; height: 4px; background: rgba(255,255,255,0.1);
+        border-radius: 2px; overflow: hidden;
+    }
+    #progress-fill {
+        height: 100%; width: 100%;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        transform-origin: left; transform: scaleX(0);
+        will-change: transform;
+    }
+
+    /* PANEL DE BOTONES */
+    #button-panel {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Reducido para 3 botones */
+        gap: 15px; 
+        width: 100%; 
+        padding-top: 30px;
+        max-width: 600px; /* Ancho máximo para el panel */
+    }
+    .circular-button {
+        /* ESTILO TARJETA GEMINI */
+        background: var(--surface-card);
+        border: none;
+        display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;
+        cursor: pointer; 
+        border-radius: 16px; /* Bordes redondeados de tarjeta */
+        height: 150px; /* Altura fija para tarjetas más grandes */
+        width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+        transition: background 0.2s, transform 0.2s;
+        box-shadow: none; /* Sin sombra (plano) */
+        position: relative;
+        overflow: hidden;
+        will-change: transform;
+        touch-action: manipulation;
+    }
+    @media (hover: hover) {
+        .circular-button:hover {
+            transform: translateY(-2px);
+            background: var(--surface-hover);
+            box-shadow: none;
+        }
+    }
+    .circular-button:active {
+        transform: scale(0.95);
+    }
+    /* ESTILOS PARA ICONOS SVG (IMÁGENES ESTÁTICAS) */
+    .circular-button svg { 
+        width: 40px; /* Icono más grande */
+        height: 40px;
+        fill: var(--text-secondary); /* Color base grisáceo */
+        margin-bottom: auto;
+        z-index: 2;
+        transition: fill 0.3s, transform 0.3s;
+    }
+    @media (hover: hover) {
+        .circular-button:hover svg {
+            transform: scale(1.1);
+            fill: var(--color-secondary); /* Se ilumina con el azul Gemini al pasar el mouse */
+            filter: drop-shadow(0 0 8px rgba(75, 144, 255, 0.4));
+        }
+    }
+    .circular-button .title { 
+        font-size: 1.1em; /* Título más grande */
+        font-family: 'Roboto', sans-serif; /* Fuente limpia */
+        font-weight: 500; 
+        margin-top: 4px; 
+        color: var(--text-primary);
+        text-transform: none; /* Texto normal, no mayúsculas */
+        letter-spacing: 0;
+        text-align: left;
+        z-index: 2;
+        text-shadow: none;
+    }
+    
+    #date-picker-icon {
+        display: inline-block;
+        cursor: pointer;
+        margin-bottom: 10px;
+        padding: 5px;
+        border-radius: 50%;
+        transition: background 0.2s, transform 0.2s;
+    }
+    #date-picker-icon svg {
+        width: 28px; height: 28px;
+        fill: var(--text-secondary);
+        vertical-align: middle;
+        transition: fill 0.2s;
+        touch-action: manipulation;
+    }
+    @media (hover: hover) {
+        #date-picker-icon:hover { transform: scale(1.1); background: var(--surface-hover); }
+        #date-picker-icon:hover svg { fill: var(--neon-blue); }
+    }
+
+    /* Efecto de brillo que pasa por el botón */
+    .circular-button::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+        pointer-events: none;
+    }
+    @media (hover: hover) {
+        .circular-button:hover::after {
+            left: 100%;
+        }
+    }
+
+    /* AJUSTE PARA PANTALLAS MUY PEQUEÑAS (Móviles angostos) */
+    @media (max-width: 480px) {
+        header h1 {
+            font-size: 2.2em; /* Reducir el tamaño del título principal */
+            letter-spacing: 2px;
+        }
+        .menu-btn-grid {
+            grid-template-columns: 1fr !important; /* Una columna para los botones de menú */
+        }
+        .modal-content {
+            padding: 15px; /* Reducir el padding en modales */
+        }
+        body {
+            /* Ajuste seguro para móviles pequeños */
+            padding-top: max(10px, env(safe-area-inset-top));
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            padding-left: max(10px, env(safe-area-inset-left));
+            padding-right: max(10px, env(safe-area-inset-right));
+        }
+        /* Ajustar tamaño de botones de categoría principal en móvil */
+        #button-panel {
+             grid-template-columns: 1fr;
+             max-width: 300px;
+        }
+        .circular-button {
+             height: 120px;
+        }
+        /* Optimización táctil y visual para móviles */
+        input, textarea, select {
+            font-size: 16px !important; /* Evita zoom automático en iOS al escribir */
+        }
+        #btn-crisis, #btn-music-corner, #btn-settings-corner {
+            width: 48px; height: 48px; /* Área táctil más grande y cómoda */
+        }
+        #clock-wrapper {
+            transform: scale(0.85); /* Ajuste para evitar desbordes en pantallas angostas */
+            margin-bottom: -15px;
+        }
+    }
+
+    /* Estilos para The Loom of Forgiveness (Mochila V2) */
+    #loom-overlay canvas { width: 100%; height: 100%; }
+    #loom-overlay #ui {
+        position: fixed; bottom: 10%; width: 100%; text-align: center;
+        color: rgba(255,255,255,0.4); pointer-events: none;
+        font-family: 'Courier New', monospace;
+    }
+    #loom-overlay #input-box {
+        position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
+        background: transparent; border: none; border-bottom: 1px solid #4facfe;
+        color: white; text-align: center; font-size: 1.2rem; outline: none;
+        letter-spacing: 2px; width: 80%;
+    }
+    #loom-overlay #core {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 60px; height: 60px; border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 40px rgba(79, 172, 254, 0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        pointer-events: none;
+    }
+
+    .card input { /* Mantener para compatibilidad si se usa en otro lado */
+        width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc;
+        background: #131314; border-radius: 8px; box-sizing: border-box; color: white;
+    }
+
+    /* MODALES CONTENIDO */
+    .modal-overlay {
+        position: fixed; inset: 0; /* En móvil fixed es mejor, en PC el media query lo hace absolute */
+        background: rgba(0,0,0, 0.8);
+        display: flex; justify-content: center; align-items: center;
+        z-index: 9500;
+    }
+    .modal-content {
+        background: var(--surface-card); /* Fondo oscuro estilo Gemini */
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Borde sutil */
+        padding: 20px;
+        border-radius: 20px;
+        width: 95%;
+        max-width: 550px;
+        text-align: center;
+        max-height: 95vh;
+        overflow-y: auto;
+        position: relative;
+        color: var(--text-primary); /* Texto Claro */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overscroll-behavior: contain; /* Evita que el scroll del modal mueva el fondo */
+    }
+    .modal-content h2, .modal-content h3, .modal-content h1, .modal-content h4, .modal-content p, .modal-content label, .modal-content span, .modal-content div {
+        color: var(--text-primary) !important; /* Forzar texto claro en ventanas */
+    }
+    .hidden { display: none !important; }
+
+    /* Estilos del Journal (Diario) con NEÓN */
+    #journal-textarea {
+        width: 100%;
+        min-height: 150px; /* Reducido para dejar espacio al historial */
+        padding: 15px;
+        border-radius: 10px;
+        /* Estilo Azul Neón */
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        box-shadow: none;
+        background-color: var(--bg-app);
+        color: var(--text-primary); 
+        font-family: 'Roboto', sans-serif;
+        font-size: 1em;
+        line-height: 1.5;
+        box-sizing: border-box;
+        resize: vertical;
+        transition: box-shadow 0.3s;
+    }
+    /* Estilo de enfoque (hover/focus) */
+    #journal-textarea:focus {
+        outline: none;
+        border: 2px solid var(--neon-blue);
+    }
+    
+    /* ESTILO PARA EL TEXTAREA DEL NIÑO INTERIOR */
+    #inner-child-textarea {
+        width: 100%;
+        min-height: 100px; /* Más corto que el diario principal */
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+        background-color: var(--bg-app);
+        color: var(--text-primary); 
+        font-family: 'Roboto', sans-serif;
+        font-size: 1em;
+        line-height: 1.4;
+        box-sizing: border-box;
+        resize: vertical;
+        margin-top: 15px;
+    }
+    #inner-child-textarea:focus {
+        outline: none;
+        border: 2px solid var(--neon-blue);
+    }
+
+    /* --- ESTILOS DE HISTORIAL --- */
+    .history-container {
+        margin-top: 25px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: left;
+    }
+    .history-container h4 {
+        color: var(--neon-blue) !important;
+        font-size: 1em;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    .history-item {
+        border-left: 3px solid var(--neon-blue);
+        padding: 8px 10px 8px 15px;
+        margin-bottom: 15px;
+        background: var(--surface-hover);
+        border-radius: 5px;
+        font-size: 0.85em;
+        color: var(--text-primary);
+        white-space: pre-wrap; /* Mantener saltos de línea */
+    }
+    .history-item strong {
+        display: block;
+        color: var(--neon-blue) !important;
+        margin-bottom: 3px;
+        font-size: 0.9em;
+    }
+    /* --- FIN ESTILOS DE HISTORIAL --- */
+      
+    #journal-info {
+        font-size: 0.75em;
+        color: var(--text-secondary) !important;
+        opacity: 0.7;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+
+    /* ESTILOS ESPECÍFICOS DE MODAL ANIMATED (MOCHILA/NIÑO INTERIOR) */
+    .concept-header {
+        background: rgba(75, 144, 255, 0.1);
+        border-left: 5px solid var(--neon-blue);
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        text-align: left;
+        font-weight: bold;
+        color: var(--text-primary);
+        font-size: 0.95em;
+    }
+    .task-list {
+        margin-top: 20px;
+        text-align: left;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .task-item-container {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+    .task-circle {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2em;
+        margin-right: 15px;
+        background-color: var(--neon-blue);
+        box-shadow: none;
+        border: none;
+    }
+    .task-text {
+        color: var(--text-primary);
+        font-size: 0.95em;
+        line-height: 1.4;
+        padding-top: 5px;
+    }
+    .task-text strong {
+        color: var(--neon-blue) !important;
+    }
+    /* Fin de estilos de Mochila */
+
+    /* ESTILOS DE LISTA PARA 12 PASOS (MEJORADO) */
+    .aa-steps-list {
+        text-align: left;
+        list-style-type: none;
+        counter-reset: step-counter;
+        padding: 0;
+        margin: 20px auto;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px; /* Espacio entre cada paso */
+    }
+    .aa-steps-list li {
+        counter-increment: step-counter;
+        display: flex;
+        align-items: flex-start; /* Alinear al inicio para textos largos */
+        gap: 12px;
+        background: var(--surface-hover);
+        padding: 12px;
+        border-radius: 12px;
+        border-left: 3px solid var(--neon-blue);
+        font-size: 0.9em;
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+    .aa-steps-list li::before {
+        content: counter(step-counter);
+        flex-shrink: 0; /* Evitar que el círculo se encoja */
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--neon-blue);
+        color: white;
+        font-size: 0.9em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        box-shadow: 0 0 8px rgba(75, 144, 255, 0.4);
+    }
+
+    /* --- MAPA DE PRÁCTICA DIARIA --- */
+    #daily-practice-map {
+        margin-top: 30px;
+        padding: 15px 5px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    #daily-practice-map h3 {
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        font-size: 1.2em;
+        text-align: center;
+    }
+    .map-item {
+        position: relative;
+        padding-left: 50px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+    .map-item:before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: -25px;
+        width: 2px;
+        background: rgba(75, 144, 255, 0.3);
+    }
+    .map-item:last-child:before {
+        height: 50%;
+        bottom: auto;
+    }
+    .map-icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--neon-blue);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5em;
+        z-index: 10;
+        box-shadow: 0 0 10px var(--neon-blue);
+        border: none;
+    }
+    .map-content {
+        background: var(--surface-hover);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: none;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+    .map-content strong {
+        display: block;
+        font-size: 1em;
+        margin-bottom: 5px;
+        color: var(--neon-blue) !important;
+    }
+    .map-content input[type="date"],
+    .map-content input[type="text"] {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--bg-app);
+        border-radius: 4px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: inherit;
+        transition: border 0.3s ease;
+    }
+    /* Fin de estilos del mapa */
+
+    /* AA MODAL HEADER QUOTE */
+    .aa-quote-header {
+        background: rgba(75, 144, 255, 0.1);
+        border-left: 5px solid var(--neon-blue);
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        text-align: left;
+        font-style: italic;
+        color: var(--text-primary);
+        font-size: 0.9em;
+    }
+
+    /* Estilos para el nuevo formulario de AA */
+    .aa-form-section {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .aa-form-section label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-primary) !important;
+    }
+    .aa-form-section select, .aa-form-section textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: var(--text-primary);
+        background: var(--bg-app);
+        font-size: 1em;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+    .aa-form-section input[type="range"] {
+        width: 100%;
+        cursor: pointer;
+        accent-color: var(--neon-blue);
+    }
+      
+    /* ESTILOS ESPECÍFICOS DE CRISIS (Para input) */
+    .crisis-config {
+        margin: 20px auto 30px auto;
+        padding: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        max-width: 350px;
+        text-align: left;
+    }
+    .crisis-config input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        font-size: 1em;
+        color: var(--text-primary);
+        background: var(--bg-app);
+        box-sizing: border-box;
+    }
+
+    /* ####### ESTILOS NIÑO INTERIOR (NUEVO) ####### */
+    .ic-container {
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        margin: 0 auto;
+        color: var(--text-primary);
+    }
+    .ic-pantalla { transition: opacity 0.5s ease; }
+    .ic-avatar { font-size: 80px; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+    @keyframes float {
+        0% { transform: translateY(0px); } 
+        50% { transform: translateY(-10px); } 
+        100% { transform: translateY(0px); }
+    }
+    
+    .btn-inicio-ic {
+        background: var(--neon-blue);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-size: 1.1em;
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(183, 0, 255, 0.4);
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    .espejo-contenedor {
+        position: relative;
+        width: 180px; height: 180px;
+        margin: 30px auto;
+    }
+    .circulo-abrazo {
+        width: 100%; height: 100%;
+        background: var(--color-secondary); /* Azul/Cyan para contraste */
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        animation: pulso 2s infinite;
+        user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    @keyframes pulso {
+        0% { transform: scale(1); box-shadow: 0 0 0 0px rgba(0, 212, 255, 0.4); } 
+        70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(0, 212, 255, 0); } 
+        100% { transform: scale(1); }
+    }
+    .progreso-abrazo {
+        position: absolute; top: -10px; left: -10px;
+        width: 200px; height: 200px;
+        border: 5px solid var(--neon-blue);
+        border-radius: 50%;
+        clip-path: inset(100% 0 0 0); /* Se llenará de abajo hacia arriba */
+        transition: clip-path 0.1s linear;
+        pointer-events: none;
+    }
+    .afirmacion-texto {
+        font-size: 1.1em; font-style: italic; min-height: 60px; margin-top: 20px; color: var(--text-primary); font-weight: bold;
+    }
+
+    /* ESTILOS MOCHILA ALQUIMIA (NUEVO) */
+    .mochila-step { display: none; animation: fadeIn 0.5s; }
+    .mochila-step.active { display: block; }
+    .mochila-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .category-btn {
+        background: var(--surface-card); border: 1px solid rgba(255,255,255,0.1);
+        padding: 15px; border-radius: 10px; cursor: pointer;
+        display: flex; flex-direction: column; align-items: center; gap: 5px;
+        transition: transform 0.2s, background 0.2s;
+    }
+    .category-btn:hover { transform: scale(1.05); background: var(--surface-hover); }
+    .mochila-textarea {
+        width: 100%; padding: 10px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1); background: var(--bg-app);
+        color: var(--text-primary); margin-bottom: 15px; resize: vertical; font-family: inherit;
+    }
+    .gem-collection { max-height: 300px; overflow-y: auto; text-align: left; margin-bottom: 20px; }
+    .gem-category { margin-bottom: 15px; }
+    .gem-category h4 { border-bottom: 1px solid; padding-bottom: 5px; margin-bottom: 10px; margin-top: 0; }
+    .gem-item { background: var(--surface-hover); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid; }
+    .gem-item .wisdom { display: block; font-weight: bold; margin-bottom: 4px; color: var(--text-primary); }
+    .gem-item .origin { display: block; font-size: 0.8em; opacity: 0.7; font-style: italic; color: var(--text-secondary); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ESTILOS ORGANIZADOR MEJORADO */
+    .org-badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: bold; margin-left: 5px; text-transform: uppercase; display: inline-block; }
+    .badge-alta { background: rgba(255, 0, 0, 0.15); color: #d32f2f; border: 1px solid #d32f2f; }
+    .badge-media { background: rgba(255, 165, 0, 0.15); color: #f57c00; border: 1px solid #f57c00; }
+    .badge-baja { background: rgba(0, 128, 0, 0.15); color: #388e3c; border: 1px solid #388e3c; }
+    
+    .org-progress-bg { width: 100%; height: 8px; background: var(--bg-app); border-radius: 4px; margin: 5px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+    .org-progress-fill { height: 100%; background: var(--gemini-gradient); transition: width 0.3s; }
+    
+    .org-controls { display: flex; gap: 5px; align-items: center; margin-left: 10px; }
+    .org-btn-mini { padding: 2px 8px; font-size: 0.8em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; background: var(--bg-app); color: var(--text-primary); font-weight: bold; }
+    .org-btn-mini:hover { background: var(--neon-blue); color: white; }
+
+    /* Estilos para el nuevo Organizador */
+    .organizer-section {
+        background: var(--surface-hover);
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        text-align: left;
+    }
+    .organizer-section h2 {
+        color: var(--neon-blue);
+        margin-top: 0;
+        margin-bottom: 15px;
+        border-bottom: 1px solid;
+        padding-bottom: 5px;
+    }
+    .organizer-input-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    .organizer-input-group input {
+        flex-grow: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: var(--text-primary);
+        background: var(--bg-app);
+        box-sizing: border-box;
+    }
+    .organizer-input-group button {
+        background: var(--neon-blue);
+        color: white;
+        border: none;
+        padding: 0 20px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .organizer-list {
+        list-style: none;
+        padding: 0;
+    }
+    .organizer-list li {
+        padding: 12px;
+        margin-bottom: 8px;
+        background: var(--bg-app);
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 3px solid var(--neon-blue);
+    }
+    .organizer-list .completado {
+        text-decoration: line-through;
+        opacity: 0.5;
+    }
+    .organizer-list button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2em;
+        padding: 5px;
+    }
+    .meta-item > div { width: 100%; }
+    .meta-item .barra {
+        width: 100%;
+        background: rgba(255,255,255,0.1);
+        height: 8px;
+        border-radius: 4px;
+        margin: 8px 0;
+    }
+    .meta-item .progreso {
+        height: 100%;
+        background: var(--gemini-gradient);
+        border-radius: 4px;
+    }
+
+    /* ESTILOS FICHAS AA */
+    .aa-chip {
+        width: 70px; height: 70px; border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.4);
+        display: flex; justify-content: center; align-items: center;
+        margin: 10px auto;
+        font-weight: bold; color: #5d4037; text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        font-size: 1em; border: 3px solid rgba(255,255,255,0.3);
+        position: relative;
+    }
+    .chip-silver { background: radial-gradient(circle at 30% 30%, #e0e0e0, #9e9e9e); color: #333; }
+    .chip-red { background: radial-gradient(circle at 30% 30%, #ff5252, #b71c1c); color: white; text-shadow: 0 1px 2px black; }
+    .chip-gold { background: radial-gradient(circle at 30% 30%, #ffd700, #f57f17); color: #3e2723; }
+    .chip-green { background: radial-gradient(circle at 30% 30%, #69f0ae, #1b5e20); color: white; text-shadow: 0 1px 2px black; }
+    .chip-blue { background: radial-gradient(circle at 30% 30%, #448aff, #0d47a1); color: white; text-shadow: 0 1px 2px black; }
+    .chip-purple { background: radial-gradient(circle at 30% 30%, #e040fb, #4a148c); color: white; text-shadow: 0 1px 2px black; }
+    .chip-bronze { background: radial-gradient(circle at 30% 30%, #cd7f32, #5d4037); color: white; text-shadow: 0 1px 2px black; }
+    
+    /* ANIMACIÓN RESPIRACIÓN / FOCO VISUAL */
+    @keyframes breathe {
+        0%, 100% { transform: scale(1); opacity: 0.8; } 
+        50% { transform: scale(1.6); opacity: 0.5; }
+    }
+
+    /* Estilos para Pupila Dimensional */
+    #pupila-dimensional-overlay.hidden {
+        display: none !important;
+    }
+    #pupila-dimensional-overlay {
+        display: flex;
+    }
+    /* Contenedor del Iris con textura */
+    #portal {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #000 30%, #1a1a1a 40%, #00d2ff 60%, #3a7bd5 100%);
+        box-shadow: 0 0 100px rgba(58, 123, 213, 0.4);
+        cursor: pointer;
+        transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /* La Pupila Realista */
+    #inner-pupil {
+        width: 80px;
+        height: 80px;
+        background: #000;
+        border-radius: 50%;
+        z-index: 2;
+        box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+        transition: transform 0.1s ease-out, width 0.8s, height 0.8s;
+    }
+    /* Capa de la Cámara con máscara circular */
+    #vision-stream {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0.5) scaleX(-1); /* Invertido para efecto espejo */
+        transition: all 1.2s ease-in-out;
+        object-fit: cover;
+        filter: saturate(1.2) contrast(1.1) brightness(1.1);
+    }
+    /* Frase Flotante Estilo "Humo" */
+    #inner-child-text {
+        position: absolute;
+        bottom: 20%;
+        width: 100%;
+        text-align: center;
+        color: white;
+        font-family: 'Courier New', monospace;
+        font-size: 1.2rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 15px rgba(255,255,255,0.8);
+        z-index: 5;
+    }
+    /* Estado Expandido (La Magia) */
+    #portal.expanded {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+    #portal.expanded #vision-stream {
+        opacity: 1;
+        transform: scale(1.1) scaleX(-1); /* Invertido para efecto espejo */
+        border-radius: 0;
+    }
+    #portal.expanded #inner-pupil {
+        width: 0; height: 0; /* La pupila se abre para dejar ver */
+    }
+
+    /* NEBULOSA DE VOZ (NIÑO INTERIOR) */
+    #nebula-overlay {
+        position: fixed; inset: 0; background: #000; z-index: 11000; /* Media query lo ajusta en PC */
+        display: none; flex-direction: column; align-items: center; justify-content: center;
+    }
+    #nebula-canvas {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        filter: blur(5px) contrast(1.2);
+    }
+    #nebula-ui {
+        position: absolute; top: 40%; width: 100%; text-align: center;
+        color: #fff; pointer-events: none; z-index: 11010;
+        text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        transition: opacity 0.5s;
+    }
+    #nebula-start-btn {
+        position: absolute; bottom: 15%; z-index: 11020;
+        padding: 15px 30px; border-radius: 30px; border: 1px solid #fff;
+        background: transparent; color: #fff; cursor: pointer; font-size: 1.2em;
+    }
+    .overlay-close-btn {
+        position: absolute; top: 20px; right: 20px; z-index: 11020;
+        background: rgba(255,255,255,0.2); border: none; color: white;
+        width: 40px; height: 40px; border-radius: 50%; font-size: 1.5em; cursor: pointer;
+    }
+
+    /* ESTILOS BOTONES DE AJUSTES (Si no existían) */
+    .settings-btn {
+        display: flex; align-items: center; padding: 15px;
+        background: var(--surface-card); border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+        transition: background 0.2s;
+        gap: 15px;
+    }
+    .settings-btn:hover { background: var(--surface-hover); }
+    .settings-btn .icon-container { width: 40px; height: 40px; border-radius: 50%; background: rgba(75, 144, 255, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--neon-blue); }
+    .settings-btn svg { width: 20px; height: 20px; fill: var(--neon-blue); }
+    .settings-btn .text { display: flex; flex-direction: column; text-align: left; }
+    .settings-btn .text strong { color: var(--text-primary); font-size: 1em; }
+    .settings-btn .text span { color: var(--text-secondary); font-size: 0.8em; }
+
+    /* ESTILOS MENU BTN (Si no existían) */
+    .menu-btn {
+        background: var(--surface-card); border: 1px solid rgba(255,255,255,0.1);
+        padding: 15px; border-radius: 16px; cursor: pointer;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+        transition: transform 0.2s, background 0.2s; height: 100px;
+    }
+    .menu-btn:hover { transform: translateY(-2px); background: var(--surface-hover); }
+    .menu-btn .icon { display: flex; align-items: center; justify-content: center; }
+    .menu-btn .icon svg { width: 40px; height: 40px; fill: var(--neon-blue); }
+    .menu-btn .text { color: var(--text-primary); font-weight: 500; }
+
+    /* JUEGO COGNITIVO (MEMORIA) */
+    .memory-game {
+        display: grid;
+        gap: 10px;
+        perspective: 1000px;
+        margin-top: 20px;
+    }
+    .memory-card {
+        aspect-ratio: 1/1;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.5s;
+        cursor: pointer;
+    }
+    .memory-card.flip { transform: rotateY(180deg); }
+    .memory-card .front-face, .memory-card .back-face {
+        width: 100%; height: 100%; position: absolute; border-radius: 8px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 2em; backface-visibility: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .memory-card .front-face { background: var(--surface-card); border: 2px solid var(--neon-blue); transform: rotateY(180deg); }
+    .memory-card .back-face { background: var(--surface-hover); border: 2px solid rgba(255,255,255,0.1); color: var(--neon-blue); font-size: 1.5em; }
+    
+    /* NIVELES JUEGO */
+    .level-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px;
+    }
+    .level-btn {
+        background: var(--surface-card); border: 1px solid rgba(255,255,255,0.1);
+        aspect-ratio: 1/1; display: flex; justify-content: center; align-items: center;
+        border-radius: 12px; color: var(--text-primary); cursor: pointer;
+        font-weight: bold; font-size: 1.2em; transition: transform 0.2s, background 0.2s;
+    }
+    .level-btn:hover { transform: scale(1.05); background: var(--surface-hover); }
+    .level-btn.locked { opacity: 0.4; cursor: not-allowed; background: #000; border-color: transparent; }
+    .level-btn.completed { border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 5px rgba(75, 144, 255, 0.3); }
+    /* FIN JUEGO COGNITIVO */
+
+    /* ORB NIÑO INTERIOR */
+    .orb-container { position: relative; width: 150px; height: 150px; margin: 20px auto; display: flex; justify-content: center; align-items: center; }
+    .orb { width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, #fadadd 0%, #ffc0cb 100%); box-shadow: 0 0 20px #ffc0cb; transition: all 0.5s; }
+    .orb.alert { background: radial-gradient(circle, #ff6961 0%, #ff8c8c 100%); box-shadow: 0 0 30px #ff6961; transform: scale(1.1); }
+    .warning-text { opacity: 0; color: #ff6961; font-weight: bold; transition: opacity 0.5s; margin-top: 10px; font-size: 0.9em; }
+    .warning-text.visible { opacity: 1; }
+    /* FIN ORB */
+
+    /* ESTILOS ANALIZADOR DE SUSTANCIAS */
+    .toxic-container { display: flex; flex-direction: column; gap: 20px; }
+    .sustancia-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+    }
+    .sustancia-btn {
+        background: var(--surface-hover);
+        color: var(--text-primary);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .sustancia-btn:hover {
+        background: var(--surface-card);
+        transform: translateY(-2px);
+    }
+    .sustancia-btn.active {
+        background: var(--neon-blue);
+        color: white;
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 10px var(--neon-blue);
+    }
+    .toxic-panel { background: var(--surface-hover); padding: 15px; border-radius: 12px;
+        text-align: left; border-left: 4px solid var(--neon-blue);
+        display: none; /* Oculto por defecto */ animation: fadeIn 0.5s;
+    }
+    .toxic-panel p { margin: 8px 0; font-size: 0.9em; }
+    .toxic-panel strong { color: var(--text-primary); }
+    .risk-label { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
+    .risk-danger { background: #ff5252; box-shadow: 0 0 8px #ff5252; }
+    .risk-warning { background: #ffab40; box-shadow: 0 0 8px #ffab40; }
+    .risk-success { background: #69f0ae; box-shadow: 0 0 8px #69f0ae; }
+    #simulador-visual { height: 100px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.5em; font-weight: bold; color: white; text-shadow: 1px 1px 5px rgba(0,0,0,0.7); background: radial-gradient(circle, var(--neon-blue) 0%, var(--bg-app) 70%); transition: all 0.5s ease-in-out; border: 1px solid rgba(255,255,255,0.1); }
+    .effect-blur { filter: blur(3px); }
+    .effect-distort { filter: hue-rotate(90deg) saturate(2); }
+    .effect-shake { animation: shake 0.4s infinite; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-4px); } }
+
+    /* ESTILOS RESPIRACIÓN CÓSMICA */
+    #breath-container {
+        position: relative;
+        width: 220px;
+        height: 220px;
+        margin: 20px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #breath-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--neon-blue) 0%, rgba(75, 144, 255, 0.2) 70%, transparent 100%);
+        box-shadow: 0 0 30px var(--neon-blue);
+        opacity: 0.6;
+        transform: scale(1);
+        will-change: transform, opacity;
+    }
+    #breath-text {
+        position: absolute;
+        color: var(--text-primary);
+        font-weight: bold;
+        font-size: 1.2em;
+        pointer-events: none;
+        text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        z-index: 2;
+    }
+
+    @media (max-width: 480px) {
+        header h1 {
+            font-size: 2.2em; /* Reducir el tamaño del título principal */
+            letter-spacing: 2px;
+        }
+        .menu-btn-grid {
+            grid-template-columns: 1fr !important; /* Una columna para los botones de menú */
+        }
+        .modal-content {
+            padding: 15px; /* Reducir el padding en modales */
+        }
+        body {
+            /* Ajuste seguro para móviles pequeños manteniendo env */
+            padding-top: max(10px, env(safe-area-inset-top));
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            padding-left: max(10px, env(safe-area-inset-left));
+            padding-right: max(10px, env(safe-area-inset-right));
+        }
+        /* Ajustar tamaño de botones de categoría principal en móvil */
+        #button-panel {
+             grid-template-columns: 1fr;
+             max-width: 300px;
+        }
+        .circular-button {
+             height: 120px;
+        }
+    }
+    /* ESTILOS NEURO-GATE */
+    .game-container { width: 100%; text-align: center; }
+    .game-container .header { margin-bottom: 1rem; }
+    .game-grid {
+        display: grid;
+        grid-template-columns: repeat(var(--grid-size, 5), 1fr);
+        gap: 10px;
+        background-color: #2a2f42;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .shape-card {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background-color: #3a415a;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s, background-color 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .shape-card:hover { transform: scale(1.05); }
+    .shape-card svg { width: 70%; height: 70%; }
+    .shape-card.correct { background-color: #4caf50; transform: scale(0.9); cursor: not-allowed; }
+    .shape-card.incorrect { animation: shake 0.5s; }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); } 
+        25% { transform: translateX(-5px); } 
+        50% { transform: translateX(5px); } 
+        75% { transform: translateX(-5px); }
+    }
+    .message-box { margin-top: 1.5rem; font-size: 1.2rem; font-weight: 600; height: 30px; }
+    .target-shape { width: 50px; height: 50px; }
+    .target-display { display: flex; justify-content: center; align-items: center; gap: 1rem; }
+      
+</style>
+
+<!-- Importar librería de Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+<body>
+    <div id="stars-container"></div>
+
+    <div id="btn-crisis" onclick="openCrisisModal()"><svg viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+
+    <div id="settings-corner-container" onclick="openSettingsModal()">
+        <div id="btn-settings-corner"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.58 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+        <div id="settings-credits">AJUSTES</div>
+    </div>
+
+    <div id="music-corner-container" onclick="openMusicModal()">
+        <div id="btn-music-corner"><svg viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.16-1.75 4.45-4H15V6h4V3h-7z"/></svg></div>
+        <div id="music-credits">MANUEL SALMUN<br>CREDITOS</div>
+    </div>
+
+    <div id="install-container">
+        <button id="btn-install" onclick="installPWA()">DESCARGAR<br>ANDROID / PC</button>
+    </div>
+
+    <header>
+        <h1>Oddoner</h1>
+        <p>DANIEL GOMEZ PERALTA <br> CREADOR</p>
+    </header>
+
+    <div style="text-align: center; margin-bottom: 35px;">
+        <h2 style="margin: 0 0 8px 0; font-weight: 400; font-size: 1.8em; color: var(--text-primary);">Hola, Bienvenido</h2>
+        <p style="margin: 0; font-size: 1.1em; color: var(--text-secondary);">¿Por dónde empezamos?</p>
+    </div>
+
+    <div id="content-wrapper">
+        <div id="clock-wrapper">
+            <canvas id="magnetic-clock-canvas"></canvas>
+            <div id="counter-content" onclick="resetCounter()" title="Haz clic para reiniciar el contador">
+                <div id="days-display">0 DÍAS</div>
+                <div id="hms-display">00:00:00</div>
+            </div>
+        </div>
+
+        <div id="clock-footer" onclick="showDatePicker()" title="Haz clic para cambiar la fecha de inicio">
+            <p style="font-size: 0.9em; color: var(--text-secondary); opacity: 0.8;">Toca para ajustar la fecha de inicio</p>
+        </div>
+
+        <div id="milestone-container">
+            <div class="progress-labels">
+                <span id="lbl-next-goal">Meta: Calculando...</span>
+                <span id="lbl-percent">0%</span>
+            </div>
+            <div class="progress-track">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div id="button-panel">
+            <div class="circular-button" onclick="openTallerModal()">
+                <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6.32L12 21l7-3.5V11.18L23 9l-2-1.09V6l-3-1.5L12 3zm6.82 6L12 11.71 5.18 9 12 6.29 18.82 9zM17 11.95v3.54L12 18.29l-5-2.8v-3.54L12 14.82l5-2.87z"/></svg>
+                <span class="title">Mi Trabajo Interior</span>
+            </div>
+            <div class="circular-button" onclick="openAAMenuModal()">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 7l-5.19 9h10.38L12 7z"/></svg>
+                <span class="title">Alcohólicos Anónimos</span>
+            </div>
+            <div class="circular-button" onclick="openAnxietyCapsuleModal()">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                <span class="title">Cápsula de Ansiedad</span>
+            </div>
+            <div class="circular-button" onclick="openToxicTestModal()">
+                <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.45l8.27 14.3H3.73L12 5.45zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+                <span class="title">Analizador Sustancias</span>
+            </div>
+            <div class="circular-button" onclick="openNeuroGateModal()">
+                <svg viewBox="0 0 24 24"><path d="M9.5 4c-1.12 0-2.12.33-2.95.88C5.24 5.63 4.2 7.14 4 8.5c-.14.99.19 1.96.83 2.65.64.69 1.57.96 2.67.96h.5v2H6c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h2v1c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1h2c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2h-2v-2h.5c1.1 0 2.03-.27 2.67-.96.64-.69.97-1.66.83-2.65-.2-1.36-1.24-2.87-2.6-3.62C16.62 4.33 15.62 4 14.5 4c-1.93 0-3.5 1.57-3.5 3.5v.5h-1V7.5C10 5.57 9.93 4 9.5 4zm-1 9.5c0-.28.22-.5.5-.5h5c.28 0 .5.22.5.5v2H8.5v-2z"/></svg>
+                <span class="title">Neuro Gate</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+             <a href="#" onclick="openDonationModal(); return false;" class="btn" style="background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 20px; font-size: 0.9em;">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor; margin-right: 8px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                Apoyar el Proyecto
+             </a>
+        </div>
+    </div>
+
+    <!-- AUDIO PLAYER (Oculto) -->
+    <audio id="bg-music" loop>
+        <source src="audio/relax.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="general-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 id="gen-modal-title"></h2>
+            <div id="gen-modal-body"></div>
+            <button class="btn" onclick="closeGenModal()">CERRAR</button>
+        </div>
+    </div>
+
+    <!-- NEURO GATE MODAL -->
+    <div id="neuro-gate-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="background-color: #1a1d2d; color: #e0e0f0; max-width: 700px;">
+            <div class="game-container">
+                <div class="header">
+                    <h1 style="color: #ffab40;">Neuro Gate</h1>
+                    <p>Encuentra todas las figuras que coincidan con el objetivo antes de que se acabe el tiempo.</p>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; margin-bottom: 1.5rem;">
+                    <div class="level-indicator">Nivel: <span id="neuro-level">1</span> de 20</div>
+                    <div class="timer">Tiempo: <span id="neuro-timer">15</span>s</div>
+                </div>
+                
+                <div class="target-display">
+                    <h2>Encuentra:</h2>
+                    <div id="neuro-target-shape-container" class="target-shape"></div>
+                </div>
+
+                <div id="neuro-game-grid" class="game-grid"></div>
+
+                <div id="neuro-message" class="message-box"></div>
+                <button class="btn" onclick="closeNeuroGateModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEBULOSA OVERLAY -->
+    <div id="nebula-overlay">
+        <canvas id="nebula-canvas"></canvas>
+        <div id="nebula-ui">
+            <h2>Susurra o sopla...</h2>
+            <p>Libera lo que tu niño interior calla</p>
+        </div>
+        <button id="nebula-start-btn" onclick="startNebula()">Activar Voz 🎙️</button>
+        <button id="nebula-close-btn" class="overlay-close-btn" onclick="stopNebula()">×</button>
+    </div>
+
+    <!-- PUPILA DIMENSIONAL OVERLAY (NUEVO) -->
+    <div id="pupila-dimensional-overlay" class="hidden" style="position: fixed; inset: 0; background: #020202; z-index: 11000; display: flex; justify-content: center; align-items: center;"> <!-- Style inline fixed se sobrescribe por CSS class si es necesario, pero mejor dejar que CSS maneje PC -->
+        <div id="portal" onclick="activatePortal()">
+            <video id="vision-stream" autoplay playsinline></video>
+            <div id="inner-pupil"></div>
+            <div id="inner-child-text">Hola pequeño,<br>te estaba esperando</div>
+        </div>
+        <button class="overlay-close-btn" onclick="deactivatePortal()">×</button>
+    </div>
+
+    <!-- The Loom of Forgiveness Overlay (NUEVO) -->
+    <div id="loom-overlay" class="hidden" style="position: fixed; inset: 0; background: #050508; z-index: 12000; display: none;"> <!-- Style inline fixed se sobrescribe por CSS class si es necesario -->
+        <div id="core"></div>
+        <input type="text" id="input-box" placeholder="Escribe un resentimiento...">
+        <div id="ui">
+            <p id="instruction">Arrastra el nudo al centro y sopla para perdonar</p>
+        </div>
+        <canvas id="canvas"></canvas>
+        <button class="overlay-close-btn" onclick="closeLoom()">×</button>
+    </div>
+
+
+
+    <!-- NEURO GATE OVERLAY (TEST COGNITIVO) -->
+    <div id="neuro-gate-overlay" class="hidden" style="position: fixed; inset: 0; background: #131314; z-index: 14000; display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none;"> <!-- Style inline fixed se sobrescribe por CSS class si es necesario -->
+        <div id="neuro-ui-top" style="position: absolute; top: 20px; width: 100%; text-align: center; pointer-events: none;">
+            <h3 style="color: var(--neon-blue); margin: 0; letter-spacing: 2px;">NEURO-GATE</h3>
+            <p id="neuro-instruction" style="color: white; font-size: 1.1em; font-weight: bold; margin-top: 10px;">PREPARANDO...</p>
+            <div style="font-size: 0.8em; color: #888; margin-top: 5px;">Ronda: <span id="neuro-round">0</span>/20</div>
+        </div>
+        
+        <!-- Área de estímulo -->
+        <div id="neuro-stimulus" onmousedown="handleNeuroInput()" ontouchstart="handleNeuroInput(event)" style="width: 180px; height: 180px; border-radius: 50%; transition: transform 0.1s; cursor: pointer; display: none; box-shadow: 0 0 30px rgba(0,0,0,0.5);"></div>
+        
+        <div id="neuro-feedback-msg" style="position: absolute; bottom: 20%; color: #ff5252; font-weight: bold; opacity: 0; transition: opacity 0.2s; font-size: 1.5em;">¡FALLO!</div>
+        
+        <!-- Pantalla de Inicio -->
+        <div id="neuro-start-screen" style="text-align: center; padding: 20px; max-width: 400px;">
+            <div style="font-size: 3em; margin-bottom: 10px;">🚦</div>
+            <h2 style="color: var(--text-primary);">Control de Inhibición</h2>
+            <p style="color: var(--text-secondary); line-height: 1.6;">
+                Este test mide tu capacidad para <strong>frenar impulsos</strong> (crucial para manejar la ansiedad).<br><br>
+                1. Toca RÁPIDO si ves el color <strong>SEGURO</strong>.<br>
+                2. NO TOQUES si ves el color de <strong>ALERTA</strong>.<br><br>
+                ⚠️ <strong>Atención:</strong> Las reglas cambiarán a mitad del juego.
+            </p>
+            <button class="btn" onclick="startNeuroGate()" style="width: 100%; margin-top: 20px;">COMENZAR TEST</button>
+            <button class="btn" style="background: transparent; border: 1px solid #555; margin-top: 10px; width: 100%;" onclick="closeNeuroGate()">SALIR</button>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="neuro-results" style="display: none; text-align: center; padding: 25px; background: var(--surface-card); border-radius: 20px; border: 1px solid var(--neon-blue); max-width: 320px; width: 90%;">
+            <h3 style="color: white; margin-top: 0;">Diagnóstico Lógico</h3>
+            <div style="margin: 20px 0; text-align: left; font-size: 0.95em;">
+                <p style="margin-bottom: 10px;">⚡ Velocidad Mental: <strong id="res-time" style="color: var(--neon-blue); float: right;">0ms</strong></p>
+                <p style="margin-bottom: 10px;">🏆 Mejor Récord: <strong id="res-best" style="color: #ffd700; float: right;">-</strong></p>
+                <p style="margin-bottom: 10px;">🛑 Impulsividad (Errores): <strong id="res-impulse" style="color: #ff5252; float: right;">0</strong></p>
+                <p style="margin-bottom: 10px;">💤 Atención (Omitidos): <strong id="res-miss" style="color: #ff9800; float: right;">0</strong></p>
+            </div>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 15px 0;">
+            <p id="res-analysis" style="font-style: italic; color: #ccc; font-size: 0.9em; line-height: 1.4; margin-bottom: 20px;"></p>
+            <button class="btn" onclick="closeNeuroGate()" style="width: 100%;">CERRAR</button>
+        </div>
+    </div>
+
+<script>
+    const KEY = 'sobriety_date_full_v1';
+    // Claves de registro múltiple
+    const JOURNAL_KEY = 'daily_journal_history_v2'; 
+    const INNER_CHILD_KEY = 'inner_child_history_v2'; 
+    const EMERGENCY_CONTACT_KEY = 'emergency_contact_number_v1';
+    
+    const MORAL_INVENTORY_KEY = 'moral_inventory_v1';
+    const TIME_CAPSULE_KEY = 'time_capsule_v1';
+    const BRAIN_DUMP_KEY = 'brain_dump_v1';
+
+    // --- CONFIGURACIÓN DE SUPABASE ---
+    const supabaseUrl = 'https://hydmhaovulntaailfpjv.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5ZG1oYW92dWxudGFhaWxmcGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MDQzMTEsImV4cCI6MjA4MjE4MDMxMX0.26S6m9rD7g8AVZ-tZvU6mWjBtdrv-5qKmHpxnlXQTl4';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // --- CONFIGURACIÓN MOCHILA ALQUIMIA ---
+    const MOCHILA_KEY = 'mochila_gems_v1';
+    const ALCHEMY_GUIDE = {
+        'miedo': { title: 'Miedo', question: '¿Qué verdad se esconde detrás de este miedo?', placeholder: 'Ej: Que soy capaz de afrontarlo...', gem_type: 'Coraje', gem_color: '#ff9800' },
+        'culpa': { title: 'Culpa', question: '¿Qué lección has aprendido de esto?', placeholder: 'Ej: Que ahora sé actuar diferente...', gem_type: 'Perdón', gem_color: '#4caf50' },
+        'rencor': { title: 'Rencor', question: '¿Qué necesitas soltar para ser libre?', placeholder: 'Ej: La necesidad de tener razón...', gem_type: 'Compasión', gem_color: '#e91e63' },
+        'tristeza': { title: 'Tristeza', question: '¿Qué te está enseñando esta pérdida o dolor?', placeholder: 'Ej: A valorar lo que tengo...', gem_type: 'Sabiduría', gem_color: '#2196f3' }
+    };
+
+    function guardarDia() {
+        const registro = {
+            fecha: new Date().toISOString().split('T')[0],
+            decision: document.getElementById('decision').value,
+            calma: document.getElementById('calma').value,
+            honestidad: document.getElementById('honestidad').value,
+            conexion: document.getElementById('conexion').value,
+            microacto: document.getElementById('microacto').value,
+            pensamiento: document.getElementById('pensamiento').value
+        };
+
+        let historial = JSON.parse(localStorage.getItem('aa_registros')) || [];
+        historial.push(registro);
+        localStorage.setItem('aa_registros', JSON.stringify(historial));
+
+        alert("Día guardado correctamente 🙏");
+        closeGenModal(); // Cerrar el modal después de guardar
+    }
+    
+    // --- CLAVES DE NOTIFICACIÓN Y DONACIÓN ---
+    const NOTIFICATION_KEY = 'daily_reminder_time_v1';
+    const NOTIFICATION_MESSAGE_KEY = 'daily_reminder_msg_v1';
+    
+    // --- VARIABLES GLOBALES PARA DETECTOR MENTAL ---
+    let currentMochilaCategory = '';
+    let sessionClickCount = 0;
+    let sessionScrollAmount = 0;
+    let lastScrollY = window.scrollY;
+    const sessionStartTime = Date.now();
+    document.addEventListener('click', () => { sessionClickCount++; });
+    // Listener de scroll optimizado para móvil
+    document.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        // Acumular la distancia de scroll (en valor absoluto)
+        sessionScrollAmount += Math.abs(currentScrollY - lastScrollY);
+        lastScrollY = currentScrollY;
+    }, { passive: true }); // {passive: true} para no bloquear el renderizado
+
+    // ¡¡¡IMPORTANTE!!! REEMPLAZA ESTO CON TU ENLACE REAL DE PAGO (PAYPAL,Mercado Pago, etc.)
+    const PAYPAL_LINK = 'https://link.mercadopago.com.mx/oddonerapp';
+
+    let startTime = localStorage.getItem(KEY) ? parseInt(localStorage.getItem(KEY)) : new Date().getTime();
+    if(!localStorage.getItem(KEY)) localStorage.setItem(KEY, startTime);
+
+    const frases = ["Un día a la vez.", "Esto también pasará.", "Progreso, no perfección.", "Solo por hoy.", "La fe mueve montañas."];
+      
+    // --- FUNCIÓN DE CONTACTO DE EMERGENCIA ---
+    function getEmergencyContact() {
+        return localStorage.getItem(EMERGENCY_CONTACT_KEY) || '+5215512345678';
+    }
+
+    function saveEmergencyContact() {
+        const input = document.getElementById('emergency-contact-input');
+
+      if (input && input.value.trim()) {
+            localStorage.setItem(EMERGENCY_CONTACT_KEY, input.value.trim());
+            alert('Número de contacto seguro guardado.');
+        } else {
+            alert('Por favor, introduce un número válido.');
+        }
+    }
+    
+
+    // --- FUNCIONES DE GESTIÓN DE REGISTRO / HISTORIAL ---
+
+    function loadJournalHistory(key) {
+        const savedData = localStorage.getItem(key);
+        if (!savedData) return [];
+        return savedData.split('\n').filter(line => line.trim() !== '');
+    }
+
+    function generateHistoryHtml(historyLines, storageKey) {
+        if (historyLines.length === 0) {
+            return `<p style="font-size: 0.9em; opacity: 0.7; color: var(--text-secondary); text-align: center;">Aún no hay registros en el historial.</p>`;
+        }
+        
+        const reversedHistory = historyLines.slice().reverse(); 
+        
+        let html = '';
+        reversedHistory.forEach((line, index) => {
+            const originalIndex = historyLines.length - 1 - index;
+            const parts = line.split('] - ');
+            let date = "Fecha desconocida";
+            let content = line;
+
+            if (parts.length > 1) {
+                date = parts[0].replace('[', ''); 
+                content = parts.slice(1).join('] - ');
+            }
+            
+            // Sanitizar el contenido para prevenir inyección de HTML (XSS)
+            const safeContent = content.replace(/&/g, "&amp;")
+                                       .replace(/</g, "&lt;")
+                                       .replace(/>/g, "&gt;")
+                                       .replace(/"/g, "&quot;")
+                                       .replace(/'/g, "&#039;");
+            
+            html += `<div class="history-item">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <strong>${date}</strong>
+                            <button onclick="deleteJournalEntry(${originalIndex}, '${storageKey}')" style="background:none; border:none; cursor:pointer; font-size:1em; opacity:0.7; color: var(--color-alert);">❌</button>
+                        </div>
+                        <div style="margin-top:4px;">${safeContent}</div>
+                     </div>`;
+        });
+        
+        return html;
+    }
+
+    async function saveNewEntry(key, textareaId, modalTitle) {
+        const textarea = document.getElementById(textareaId);
+        if (!textarea || !textarea.value.trim()) {
+            alert("No puedes guardar un registro vacío.");
+            return;
+        }
+
+        const currentEntry = textarea.value.trim();
+        const now = new Date().toLocaleDateString('es-ES', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        const newEntryLine = `[${now}] - ${currentEntry}`;
+        
+        // 1. Guardar en LocalStorage (Copia local)
+        let history = loadJournalHistory(key);
+        history.push(newEntryLine);
+        localStorage.setItem(key, history.join('\n'));
+        
+        // 2. Guardar en Supabase (Si hay usuario logueado)
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (user) {
+            const { error } = await supabaseClient
+                .from('diario')
+                .insert([
+                    {
+                        user_id: user.id, 
+                        contenido: currentEntry, 
+                        tipo: key, // Identifica si es Diario o Niño Interior
+                        fecha: new Date().toISOString()
+                    }
+                ]);
+            if (error) console.error('Error guardando en nube:', error);
+        }
+
+        textarea.value = '';
+        localStorage.removeItem(`TEMP_${key}`);
+        
+        alert(`Registro guardado en el historial de ${modalTitle}.`);
+        
+        if (key === JOURNAL_KEY) {
+            // Recargar el modal para mostrar el historial actualizado
+            openJournalModal();
+        } else if (key === INNER_CHILD_KEY) {
+            // Recargar el modal de Niño Interior para mostrar el historial actualizado
+            openAnimatedModal(
+                'Sanando al Niño Interior',
+                [
+                    {icon: '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:white;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>', text: '<strong>Visualiza</strong> a tu yo de 5 años. Nota sus heridas y necesidades.'},
+                    {icon: '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:white;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>', text: '<strong>Pregúntale:</strong> *“¿Qué necesitas de mí hoy?”* Dale un abrazo virtual.'},
+                    {icon: '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:white;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>', text: '<strong>Prométele</strong> que le darás seguridad, límites o afecto que le faltó.'}
+                ],
+                'Tu parte emocional con las heridas y las necesidades no cubiertas de la infancia.',
+                '🧸'
+            );
+        }
+
+    }
+
+    function deleteJournalEntry(index, key) {
+        if(!confirm("¿Eliminar esta entrada permanentemente?")) return;
+        let history = loadJournalHistory(key);
+        history.splice(index, 1);
+        localStorage.setItem(key, history.join('\n'));
+        
+        if (key === JOURNAL_KEY) openJournalModal();
+        else if (key === INNER_CHILD_KEY) openInnerChildModal();
+    }
+
+    function exportJournal() {
+        const history = loadJournalHistory(JOURNAL_KEY);
+        if (history.length === 0) return alert("El diario está vacío.");
+        
+        const text = history.join('\n\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mi_diario_oddoner.txt';
+        a.click();
+    }
+
+    function saveTempEntry(key, textareaId) {
+        const textarea = document.getElementById(textareaId);
+        if (textarea) {
+            localStorage.setItem(`TEMP_${key}`, textarea.value);
+        }
+    }
+    
+    function loadTempEntry(key) {
+         return localStorage.getItem(`TEMP_${key}`) || '';
+    }
+    
+    function openJournalModal() {
+        const tempEntry = loadTempEntry(JOURNAL_KEY);
+        const historyLines = loadJournalHistory(JOURNAL_KEY);
+        const historyHtml = generateHistoryHtml(historyLines, JOURNAL_KEY);
+        
+        const today = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        const content = `
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: var(--neon-blue);"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                <h3 style="color: var(--neon-blue); margin: 0;">Inventario Diario (Paso 10)</h3>
+            </div>
+            <p style="font-size: 0.9em; color: var(--text-primary); margin-bottom: 20px; font-weight: bold;">
+                ENTRADA ACTUAL: ${today.toUpperCase()}
+            </p>
+            
+            <textarea id="journal-textarea" 
+                      placeholder="Escribe tu inventario o tus pensamientos del día. Recuerda: ¿Qué hice mal? ¿Qué hice bien? ¿Qué me hizo enojar o tener miedo?..."
+                      oninput="saveTempEntry(JOURNAL_KEY, 'journal-textarea')">${tempEntry}</textarea>
+            
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="background: var(--neon-blue); flex:1;"
+                        onclick="saveNewEntry(JOURNAL_KEY, 'journal-textarea', 'Diario')">
+                    💾 GUARDAR
+                </button>
+                <button class="btn" style="background: var(--surface-hover); border:1px solid rgba(255,255,255,0.2); flex:1;"
+                        onclick="exportJournal()">
+                    📤 EXPORTAR
+                </button>
+            </div>
+            
+            <div id="journal-info">
+                📝 La entrada actual se guarda automáticamente como borrador. Usa **Guardar Nuevo Registro** para moverla al historial y empezar una nueva.
+            </div>
+
+            <div class="history-container">
+                <h4>Historial de Registros (${historyLines.length})</h4>
+                ${historyHtml}
+            </div>
+        `;
+        openModal("📓 Mi Diario", content);
+    }
+    
+    // --- CÁPSULA DEL TIEMPO ---
+    function openTimeCapsuleModal() {
+        const capsules = JSON.parse(localStorage.getItem(TIME_CAPSULE_KEY) || '[]');
+        const now = new Date();
+        // Resetear horas de hoy para comparar fechas puras
+        now.setHours(0,0,0,0);
+        
+        // Calcular fecha mínima para el input (mañana)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const minDate = tomorrow.toISOString().split('T')[0];
+
+        let capsulesHtml = '';
+        
+        if (capsules.length === 0) {
+            capsulesHtml = '<p style="opacity:0.7; font-style:italic; color: var(--text-secondary); padding: 20px;">No hay mensajes guardados para el futuro.</p>';
+        } else {
+            // Ordenar: primero las desbloqueadas, luego por fecha
+            capsules.sort((a, b) => new Date(a.unlockDate) - new Date(b.unlockDate));
+
+            capsules.forEach((cap, index) => {
+                const parts = cap.unlockDate.split('-');
+                const unlockDateObj = new Date(parts[0], parts[1]-1, parts[2]);
+                const isUnlocked = now.getTime() >= unlockDateObj.getTime();
+                
+                const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                const dateStr = unlockDateObj.toLocaleDateString('es-ES', dateOptions);
+
+                if (isUnlocked) {
+                    capsulesHtml += `
+                        <div style="background: var(--surface-hover); padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid var(--neon-blue); text-align: left; position: relative; animation: fadeIn 0.5s;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <strong style="color:var(--neon-blue); font-size: 0.9em;">🔓 ABIERTA (${dateStr})</strong>
+                                <button onclick="deleteTimeCapsule(${index})" style="background:none; border:none; cursor:pointer; font-size: 1.2em;">❌</button>
+                            </div>
+                            <p style="margin:0; white-space: pre-wrap; color: var(--text-primary); font-size: 1em; line-height: 1.5;">${cap.message}</p>
+                        </div>`;
+                } else {
+                    // Calcular días restantes
+                    const diffTime = unlockDateObj.getTime() - now.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    
+                    capsulesHtml += `
+                        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px dashed rgba(255,255,255,0.2); text-align: left; opacity: 0.8;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="color: var(--text-secondary); font-size: 0.9em;">🔒 BLOQUEADA</strong>
+                                <button onclick="deleteTimeCapsule(${index})" style="background:none; border:none; cursor:pointer; opacity: 0.5;">❌</button>
+                            </div>
+                            <p style="margin:10px 0 5px 0; font-size:1.1em; font-weight: bold; color: var(--text-primary);">Faltan ${diffDays} días</p>
+                            <p style="margin:0; font-size:0.8em; color: var(--text-secondary);">Disponible el: ${dateStr}</p>
+                        </div>`;
+                }
+            });
+        }
+
+        const content = `
+            <div style="text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-size: 1.5em;">⏳</span>
+                    <h3 style="color: var(--neon-blue); margin: 0;">Cápsula del Tiempo</h3>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px;">
+                    Envía un mensaje de esperanza o recordatorio a tu "Yo del Futuro".
+                </p>
+                
+                <div style="background: var(--surface-card); padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1);">
+                    <textarea id="capsule-message" placeholder="Querido yo del futuro, espero que hoy..." style="width: 100%; height: 100px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: var(--bg-app); color: var(--text-primary); margin-bottom: 15px; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                        <label style="font-size:0.9em; color: var(--text-secondary); white-space: nowrap;">Abrir el:</label>
+                        <input type="date" id="capsule-date" min="${minDate}" style="flex-grow: 1; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: var(--bg-app); color: var(--text-primary); font-family: inherit;">
+                    </div>
+                    
+                    <button class="btn" onclick="saveTimeCapsule()" style="width: 100%;">🔒 SELLAR MENSAJE</button>
+                </div>
+
+                <h4 style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom: 15px; color: var(--text-primary);">Mis Cápsulas</h4>
+                <div id="capsules-list" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                    ${capsulesHtml}
+                </div>
+                
+                <button class="btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); margin-top: 15px; font-size: 0.9em;" onclick="openJournalModal()">🔙 Volver al Diario</button>
+            </div>
+        `;
+        openModal("⏳ Cápsula del Tiempo", content);
+    }
+
+    function saveTimeCapsule() {
+        const message = document.getElementById('capsule-message').value.trim();
+        const dateVal = document.getElementById('capsule-date').value;
+
+        if (!message) return alert("Por favor escribe un mensaje.");
+        if (!dateVal) return alert("Por favor selecciona una fecha.");
+
+        const capsules = JSON.parse(localStorage.getItem(TIME_CAPSULE_KEY) || '[]');
+        capsules.push({
+            message: message,
+            unlockDate: dateVal,
+            createdAt: new Date().toISOString()
+        });
+        
+        localStorage.setItem(TIME_CAPSULE_KEY, JSON.stringify(capsules));
+        alert("✨ Cápsula sellada. Nos vemos en el futuro.");
+        openTimeCapsuleModal();
+    }
+
+    function deleteTimeCapsule(index) {
+        if(!confirm("¿Eliminar esta cápsula para siempre?")) return;
+        const capsules = JSON.parse(localStorage.getItem(TIME_CAPSULE_KEY) || '[]');
+        capsules.splice(index, 1);
+        localStorage.setItem(TIME_CAPSULE_KEY, JSON.stringify(capsules));
+        openTimeCapsuleModal();
+    }
+
+    // --- RELOJ Y ENTRADA ---
+    // Optimización: Caché de elementos DOM
+    const elDays = document.getElementById('days-display');
+    const elHms = document.getElementById('hms-display');
+    // Elementos de la barra de progreso
+    const elProgressFill = document.getElementById('progress-fill');
+    const elLblNext = document.getElementById('lbl-next-goal');
+    const elLblPct = document.getElementById('lbl-percent');
+    const MILESTONES = [1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 730, 1095];
+
+    // --- RELOJ ORBITAL ANALÓGICO ---
+    let orbitalCtx;
+    let orbitalCanvas;
+
+    function initOrbitalClock() {
+        orbitalCanvas = document.getElementById('magnetic-clock-canvas');
+        if (orbitalCanvas) {
+            orbitalCtx = orbitalCanvas.getContext('2d');
+            resizeOrbitalClock();
+            window.addEventListener('resize', resizeOrbitalClock);
+        }
+    }
+
+    function resizeOrbitalClock() {
+        if(orbitalCanvas) {
+            const parent = orbitalCanvas.parentElement;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = parent.getBoundingClientRect();
+            
+            orbitalCanvas.width = rect.width * dpr;
+            orbitalCanvas.height = rect.height * dpr;
+            
+            if(orbitalCtx) orbitalCtx.scale(dpr, dpr);
+            
+            orbitalCanvas.style.width = `${rect.width}px`;
+            orbitalCanvas.style.height = `${rect.height}px`;
+        }
+    }
+
+    function drawOrbitalClock() {
+        if (!orbitalCtx || !orbitalCanvas) return;
+        
+        const width = orbitalCanvas.width / (window.devicePixelRatio || 1);
+        const height = orbitalCanvas.height / (window.devicePixelRatio || 1);
+        const ctx = orbitalCtx;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const now = new Date();
+        
+        ctx.clearRect(0, 0, width, height);
+        
+        const maxRadius = Math.min(width, height) / 2 - 5;
+        const spacing = 18; 
+        
+        // Segundos (Exterior)
+        const sec = now.getSeconds() + now.getMilliseconds() / 1000;
+        const secAngle = (Math.PI * 2) * (sec / 60) - Math.PI / 2;
+        drawOrbitRing(ctx, centerX, centerY, maxRadius, secAngle, '#4b90ff', 3);
+
+        // Minutos (Medio)
+        const min = now.getMinutes() + sec / 60;
+        const minAngle = (Math.PI * 2) * (min / 60) - Math.PI / 2;
+        drawOrbitRing(ctx, centerX, centerY, maxRadius - spacing, minAngle, '#ff5546', 4);
+
+        // Horas (Interior)
+        const hr = (now.getHours() % 12) + min / 60;
+        const hrAngle = (Math.PI * 2) * (hr / 12) - Math.PI / 2;
+        drawOrbitRing(ctx, centerX, centerY, maxRadius - spacing * 2, hrAngle, '#ffffff', 5);
+    }
+
+    function drawOrbitRing(ctx, x, y, radius, angle, color, size) {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, -Math.PI / 2, angle);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.globalAlpha = 0.6;
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+    }
+
+    function openCrisisModal() {
+        const emergencyNumber = getEmergencyContact();
+        const modalTitle = 'Contacto de Crisis';
+        const modalBody = `
+            <p>Tu contacto de emergencia es:</p>
+            <h3 style="font-size: 1.5em; letter-spacing: 2px;">${emergencyNumber}</h3>
+            <p>Presiona el botón para llamar.</p>
+            <a href="tel:${emergencyNumber}" class="btn">LLAMAR AHORA</a>
+        `;
+        const modal = document.getElementById('general-modal');
+        document.getElementById('gen-modal-title').innerHTML = modalTitle;
+        document.getElementById('gen-modal-body').innerHTML = modalBody;
+        modal.classList.remove('hidden');
+    }
+
+    function closeGenModal() {
+        document.getElementById('general-modal').classList.add('hidden');
+    }
+
+    function openSettingsModal() {
+        const modalTitle = 'Ajustes';
+        const modalBody = `
+            <div class="settings-section">
+                <h4>Contacto de Emergencia</h4>
+                <p>Este número se usará en el botón de crisis.</p>
+                <input type="tel" id="emergency-contact-input" placeholder="Introduce un número de teléfono" value="${getEmergencyContact()}">
+                <button class="btn" onclick="saveEmergencyContact()">Guardar Contacto</button>
+            </div>
+        `;
+        const modal = document.getElementById('general-modal');
+        document.getElementById('gen-modal-title').innerHTML = modalTitle;
+        document.getElementById('gen-modal-body').innerHTML = modalBody;
+        modal.classList.remove('hidden');
+    }
+
+    function openMusicModal() {
+        const modalTitle = 'Música';
+        const modalBody = `
+            <div class="music-section">
+                <h4>Música de Fondo</h4>
+                <p>"Relaxing" por Manuel Salmun</p>
+                <p>La música de fondo te ayuda a relajarte y concentrarte.</p>
+                <button class="btn" onclick="toggleMusic()">Play/Pause</button>
+            </div>
+        `;
+        const modal = document.getElementById('general-modal');
+        document.getElementById('gen-modal-title').innerHTML = modalTitle;
+        document.getElementById('gen-modal-body').innerHTML = modalBody;
+        modal.classList.remove('hidden');
+    }
+
+    function toggleMusic() {
+        const music = document.getElementById('bg-music');
+        if (music.paused) {
+            music.play();
+        } else {
+            music.pause();
+        }
+    }
+
+    // PWA Installation
+    let deferredPrompt;
+    const installContainer = document.getElementById('install-container');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installContainer.style.display = 'block';
+    });
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+          installContainer.style.display = 'none';
+        });
+      }
+    }
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then(registration => {
+          console.log('ServiceWorker registered: ', registration);
+        }).catch(registrationError => {
+          console.log('ServiceWorker registration failed: ', registrationError);
+        });
+      });
+    }
+
+    function resetCounter() { alert('Función no implementada: resetCounter'); }
+    function showDatePicker() { alert('Función no implementada: showDatePicker'); }
+    function openTallerModal() { alert('Función no implementada: openTallerModal'); }
+    function openAAMenuModal() { alert('Función no implementada: openAAMenuModal'); }
+    function openAnxietyCapsuleModal() { alert('Función no implementada: openAnxietyCapsuleModal'); }
+    function openToxicTestModal() { 
+        window.location.href = 'test_toxic.html';
+     }
+    function openDonationModal() {
+        window.open(PAYPAL_LINK, '_blank');
+    }
+    function startNebula() { alert('Función no implementada: startNebula'); }
+    function stopNebula() { alert('Función no implementada: stopNebula'); }
+    function activatePortal() { alert('Función no implementada: activatePortal'); }
+    function deactivatePortal() { alert('Función no implementada: deactivatePortal'); }
+    function closeLoom() { alert('Función no implementada: closeLoom'); }
+    function startNeuroGate() { alert('Función no implementada: startNeuroGate (legacy)'); }
+    function closeNeuroGate() { alert('Función no implementada: closeNeuroGate (legacy)'); }
+
+    let neuroGameInterval;
+
+    function openNeuroGateModal() {
+        document.getElementById('neuro-gate-modal').classList.remove('hidden');
+        startNeuroGame();
+    }
+
+    function closeNeuroGateModal() {
+        document.getElementById('neuro-gate-modal').classList.add('hidden');
+        clearInterval(neuroGameInterval);
+    }
+
+    function startNeuroGame() {
+        const gameGrid = document.getElementById('neuro-game-grid');
+        const levelDisplay = document.getElementById('neuro-level');
+        const targetShapeContainer = document.getElementById('neuro-target-shape-container');
+        const messageBox = document.getElementById('neuro-message');
+        const timerDisplay = document.getElementById('neuro-timer');
+
+        const SHAPES = {
+            circle: (color) => `<svg viewbox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}" /></svg>`,
+            square: (color) => `<svg viewbox="0 0 100 100"><rect x="10" y="10" width="80" height="80" fill="${color}" /></svg>`,
+            triangle: (color) => `<svg viewbox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="${color}" /></svg>`,
+            star: (color) => `<svg viewbox="0 0 100 100"><polygon points="50,5 61,40 98,40 68,62 79,96 50,75 21,96 32,62 2,40 39,40" fill="${color}" /></svg>`,
+            hexagon: (color) => `<svg viewbox="0 0 100 100"><polygon points="25,10 75,10 95,50 75,90 25,90 5,50" fill="${color}" /></svg>`
+        };
+        const COLORS = ['#e91e63', '#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800'];
+        const SHAPE_KEYS = Object.keys(SHAPES);
+
+        const LEVELS = Array.from({ length: 20 }, (_, i) => {
+            const level = i + 1;
+            return {
+                level: level,
+                gridSize: 3 + Math.floor(i / 3), // Increased difficulty
+                numShapes: 2 + Math.floor(i / 4), // Increased difficulty
+                numTargets: 3 + Math.floor(i / 2),
+                time: 15 - Math.floor(i / 2) // Decreasing time
+            };
+        });
+
+        let currentLevel = 0;
+        let targetShape, targetColor;
+        let targetsToFind = 0;
+        let timeLeft = 0;
+
+        function generateLevel() {
+            const levelData = LEVELS[currentLevel];
+            levelDisplay.innerText = `${levelData.level} de 20`;
+            messageBox.innerText = '';
+            gameGrid.innerHTML = '';
+            gameGrid.style.setProperty('--grid-size', levelData.gridSize);
+            timeLeft = levelData.time;
+            timerDisplay.innerText = timeLeft;
+
+            clearInterval(neuroGameInterval);
+            neuroGameInterval = setInterval(updateTimer, 1000);
+
+
+            // Select random shapes and colors for this level
+            const levelShapes = [...SHAPE_KEYS].sort(() => 0.5 - Math.random()).slice(0, levelData.numShapes);
+            const levelColors = [...COLORS].sort(() => 0.5 - Math.random()).slice(0, levelData.numShapes);
+
+            // Select target
+            targetShape = levelShapes[Math.floor(Math.random() * levelShapes.length)];
+            targetColor = levelColors[Math.floor(Math.random() * levelColors.length)];
+            targetShapeContainer.innerHTML = SHAPES[targetShape](targetColor);
+
+            const gridItems = [];
+            targetsToFind = levelData.numTargets;
+
+            // Add targets to the grid
+            for (let i = 0; i < targetsToFind; i++) {
+                gridItems.push({ shape: targetShape, color: targetColor, isTarget: true });
+            }
+
+            // Add distractors
+            const numDistractors = (levelData.gridSize ** 2) - targetsToFind;
+            for (let i = 0; i < numDistractors; i++) {
+                let distractorShape = levelShapes[Math.floor(Math.random() * levelShapes.length)];
+                let distractorColor = levelColors[Math.floor(Math.random() * levelColors.length)];
+                // Ensure distractor is not the same as target
+                while (distractorShape === targetShape && distractorColor === targetColor) {
+                    distractorShape = levelShapes[Math.floor(Math.random() * levelShapes.length)];
+                    distractorColor = levelColors[Math.floor(Math.random() * levelColors.length)];
+                }
+                gridItems.push({ shape: distractorShape, color: distractorColor, isTarget: false });
+            }
+
+            // Shuffle and render grid
+            gridItems.sort(() => 0.5 - Math.random());
+            gridItems.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('shape-card');
+                card.innerHTML = SHAPES[item.shape](item.color);
+                card.addEventListener('click', () => handleCardClick(card, item.isTarget));
+                gameGrid.appendChild(card);
+            });
+        }
+        
+        function updateTimer() {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(neuroGameInterval);
+                messageBox.innerText = '¡Tiempo agotado!';
+                gameGrid.querySelectorAll('.shape-card').forEach(card => {
+                    card.style.pointerEvents = 'none';
+                });
+                setTimeout(generateLevel, 2000);
+            }
+        }
+
+        function handleCardClick(card, isTarget) {
+            if (card.classList.contains('correct')) return;
+
+            if (isTarget) {
+                card.classList.add('correct');
+                targetsToFind--;
+                if (targetsToFind === 0) {
+                    levelComplete();
+                }
+            } else {
+                card.classList.add('incorrect');
+                if(navigator.vibrate) navigator.vibrate(100);
+                setTimeout(() => card.classList.remove('incorrect'), 500);
+            }
+        }
+
+        function levelComplete() {
+            clearInterval(neuroGameInterval);
+            messageBox.innerText = '¡Nivel Completado!';
+            currentLevel++;
+            if (currentLevel < LEVELS.length) {
+                setTimeout(generateLevel, 1500);
+            } else {
+                messageBox.innerText = '¡Felicidades, has completado todos los niveles!';
+            }
+        }
+
+        generateLevel();
+    }
+</script>
+</body>
+</html>
