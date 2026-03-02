@@ -1,0 +1,33 @@
+let deferredPrompt;
+const installContainer = document.getElementById('install-container');
+const btnInstall = document.getElementById('btn-install');
+
+// 1. Registrar el Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log("Service Worker Activo"));
+}
+
+// 2. Escuchar el evento de instalación de Chrome/Android
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Evita que Chrome muestre su propio banner automático
+  e.preventDefault();
+  // Guarda el evento para usarlo después
+  deferredPrompt = e;
+  // Muestra tu botón personalizado
+  installContainer.style.display = 'block';
+
+  btnInstall.addEventListener('click', () => {
+    // Esconde tu UI de instalación
+    installContainer.style.display = 'none';
+    // Muestra el prompt de instalación
+    deferredPrompt.prompt();
+    // Espera a la respuesta del usuario
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Usuario aceptó la instalación');
+      }
+      deferredPrompt = null;
+    });
+  });
+});
